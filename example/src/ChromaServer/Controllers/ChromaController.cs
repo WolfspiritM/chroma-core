@@ -59,7 +59,7 @@ namespace ChromaServer.Controllers
 
             var color = new Color(hexColor);
 
-            var assignedDevice = instance.Devices.FirstOrDefault(
+            var assignedDevice = instance.Devices.Values.FirstOrDefault(
                 x => string.Equals(x.Device, device, StringComparison.CurrentCultureIgnoreCase));
 
             assignedDevice.SetStatic(color);

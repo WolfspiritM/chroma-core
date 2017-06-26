@@ -30,5 +30,10 @@ namespace Chroma.NetCore.Api.Devices
         {
             throw new NotImplementedException();
         }
+
+        public string GetDeviceMessage()
+        {
+            return "";
+        }
     }
 }

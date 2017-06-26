@@ -7,14 +7,15 @@ namespace Chroma.NetCore.Api.Messages
 {
     public class DeviceUpdateMessage : IHttpRequestMessage
     {
-        public DeviceUpdateMessage(IDevice device)
+        public DeviceUpdateMessage(IDevice device, string message)
         {
             Device = device;
+            Message = message;
         }
 
         public IDevice Device { get; }
         public Enums.HttpMessageMethod HttpMessageMethod => Enums.HttpMessageMethod.Put;
         public string UrlPath => $"chromasdk/{Device.Device}";
-        public string Message => Device.EffectData.ToString();
+        public string Message { get; }
     }
 }

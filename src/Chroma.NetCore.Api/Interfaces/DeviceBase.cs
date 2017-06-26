@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using Chroma.NetCore.Api.Chroma;
@@ -20,6 +21,8 @@ namespace Chroma.NetCore.Api.Interfaces
         public Effect ActiveEffect { get; private set; }
         public string EffectId { get; set; }
 
+        private string lastMessage = "";
+
         #endregion
 
         protected DeviceBase()
@@ -35,7 +38,7 @@ namespace Chroma.NetCore.Api.Interfaces
            SetDeviceEffect(Effect.ChromaStatic, color);
         }
 
-        public void SetAll(Color color)
+        public virtual void SetAll(Color color)
         {
            SetStatic(color);
         }
@@ -48,9 +51,17 @@ namespace Chroma.NetCore.Api.Interfaces
         protected bool SetDeviceEffect(Effect effect, dynamic data = null)
         {
             this.ActiveEffect = effect;
-            this.EffectData = GenerateMessage(data);
+            this.EffectData = data;
 
             return true;
+        }
+
+        public string GetDeviceMessage()
+        {
+            var newMessage = GenerateMessage(EffectData);
+            if (lastMessage == newMessage) return null;
+            lastMessage = newMessage;
+            return newMessage;
         }
 
 
@@ -60,7 +71,7 @@ namespace Chroma.NetCore.Api.Interfaces
             public dynamic Param { get; set; }
         }
 
-        internal dynamic GenerateMessage(dynamic data)
+        internal string GenerateMessage(dynamic data)
         {
             var message = new Data();
 
@@ -80,12 +91,17 @@ namespace Chroma.NetCore.Api.Interfaces
                 case Effect.ChromaCustom2:
                 case Effect.ChromaCustom:
                     message.Effect = ActiveEffect.GetStringValue();
-                    message.Param = data;
+                    var parammatrix = data.ToMatrix();
+                    message.Param = (parammatrix.Length == 1) ? parammatrix[0] : parammatrix;
                     break;
 
                 case Effect.ChromaCustomKey:
                     message.Effect = ActiveEffect.GetStringValue();
-                    message.Param = data;
+                    message.Param = new
+                    {
+                        color = data.color.ToMatrix(),
+                        key = data.key.ToMatrix()
+                    };
                     break;
             }
 

@@ -119,7 +119,7 @@ namespace Chroma.NetCore.Api.Chroma
 
             foreach (var frame in Frames)
             {
-                foreach (var frameDevice in frame.Devices)
+                foreach (var frameDevice in frame.Devices.Values)
                 {
                     if(String.IsNullOrEmpty(frameDevice.EffectId))
                         continue;

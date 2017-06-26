@@ -32,10 +32,10 @@ namespace Chroma.NetCore.Api.Tests.Devices
 
             var container = new DeviceContainer();
             //For FireFly Chroma
-            Assert.True(container.Mousepad.SetPosition(0, 0, Color.Orange));
-            Assert.True(container.Mousepad.SetPosition(0, 6, Color.Green));
-            Assert.True(container.Mousepad.SetPosition(0, 7, Color.Red));
-            Assert.True(container.Mousepad.SetPosition(0, 8, Color.Yellow));
+            container.Mousepad.SetPosition(0, 0, Color.Orange);
+            container.Mousepad.SetPosition(0, 6, Color.Green);
+            container.Mousepad.SetPosition(0, 7, Color.Red);
+            container.Mousepad.SetPosition(0, 8, Color.Yellow);
 
             var result =  container.Mousepad.SetDevice();
             
@@ -52,10 +52,10 @@ namespace Chroma.NetCore.Api.Tests.Devices
 
             var container = new DeviceContainer();
 
-            Assert.True(container.Keypad.SetPosition(0, 0, Color.Orange));
-            Assert.True(container.Keypad.SetPosition(1, 1, Color.Green));
-            Assert.True(container.Keypad.SetPosition(2, 3, Color.Red));
-            Assert.True(container.Keypad.SetPosition(3, 4, Color.Yellow));
+            container.Keypad.SetPosition(0, 0, Color.Orange);
+            container.Keypad.SetPosition(1, 1, Color.Green);
+            container.Keypad.SetPosition(2, 3, Color.Red);
+            container.Keypad.SetPosition(3, 4, Color.Yellow);
 
             var result = container.Keypad.SetDevice();
 
@@ -71,9 +71,9 @@ namespace Chroma.NetCore.Api.Tests.Devices
             var container = new DeviceContainer();
             
             //For DeathAdder Chroma Wheel
-            Assert.True(container.Mouse.SetPosition(2, 3, Color.Blue));
+            container.Mouse.SetPosition(2, 3, Color.Blue);
             //For DeathAdder Chroma Logo
-            Assert.True(container.Mouse.SetPosition(7, 3, Color.Purple));
+            container.Mouse.SetPosition(7, 3, Color.Purple);
 
             var result = container.Mouse.SetDevice();
 
@@ -87,10 +87,10 @@ namespace Chroma.NetCore.Api.Tests.Devices
             httpClient.ClientMessage += HttpClientOnClientMessage;
             var container = new DeviceContainer();
 
-            Assert.True(container.Keyboard.SetPosition(1, 2, Color.Yellow));
-            Assert.True(container.Keyboard.SetPosition(1, 3, Color.Blue));
-            Assert.True(container.Keyboard.SetPosition(1, 4, Color.Green));
-            Assert.True(container.Keyboard.SetPosition(2, 3, Color.Red));
+            container.Keyboard.SetPosition(1, 2, Color.Yellow);
+            container.Keyboard.SetPosition(1, 3, Color.Blue);
+            container.Keyboard.SetPosition(1, 4, Color.Green);
+            container.Keyboard.SetPosition(2, 3, Color.Red);
             
             var result = container.Keyboard.SetDevice();
 

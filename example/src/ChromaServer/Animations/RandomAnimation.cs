@@ -79,7 +79,11 @@ namespace ChromaServer.Animations
                 
                 if (f == frames - 1)
                 {
-                    animationFrame.Devices.ForEach(x => x.SetNone());
+                    foreach (var device in animationFrame.Devices)
+                    {
+                        device.Value.SetNone();
+                    }
+
                     AddFrame();
                     continue;
                 }

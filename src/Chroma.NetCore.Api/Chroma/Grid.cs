@@ -11,13 +11,15 @@ namespace Chroma.NetCore.Api.Chroma
         internal Color[][] Matrix { get; }
 
         private readonly Color intialColor;
+        private bool isKeyGrid;
 
-        public Grid(int rows, int cols, Color initialColor = null)
+        public Grid(int rows, int cols, bool isKeyGrid = false, Color initialColor = null)
         {
             Rows = rows;
             Cols = cols;
             this.intialColor = initialColor ?? Color.Black;
             this.Matrix = new Color[rows][];
+            this.isKeyGrid = isKeyGrid;
             InitGrid();
         }
 
@@ -28,57 +30,69 @@ namespace Chroma.NetCore.Api.Chroma
                 Matrix[r] = new Color[Cols];
             }
         }
-        
-        public bool SetPosition(int row, int col, Color color)
+        public void Set(Color color)
         {
-            if (!CheckBounds(row, col))
-                return false;
+            for (int r = 0; r < Rows; r++)
+            {
+                for (int c= 0; c < Cols; c++)
+                {
+                    Matrix[r][c] = color;
+                }
+            }
+        }
+
+        public void SetPosition(int row, int col, Color color)
+        {
+            CheckBounds(row, col);
 
             //Set color for position in matrix grid
             Matrix[row][col] = color;
-
-            return true;
         }
 
-        public bool SetRow(int col, Color color)
+        public void SetRow(int col, Color color)
         {
-            if (!CheckBounds(0, col))
-                return false;
+            CheckBounds(0, col);
 
-            for(int r = 0; r < Rows; r++)
+            for (int r = 0; r < Rows; r++)
             {
                 Matrix[r][col] = color;
             }
-
-            return true;
         }
 
 
-        public bool SetCol(int row, Color color)
+        public void SetCol(int row, Color color)
         {
-            if (!CheckBounds(row, 0))
-                return false;
+            CheckBounds(row, 0);
 
             for (int c = 0; c < Cols; c++)
             {
                 Matrix[row][c] = color;
             }
-
-            return true;
         }
 
-        public int[][] ToMatrix()
+        public uint[][] ToMatrix()
         {
-            var convertedMatrix = new int[Rows][];
+            var convertedMatrix = new uint[Rows][];
 
             for (int r = 0; r < Rows; r++)
             {
-                convertedMatrix[r] = new int[Cols];
+                convertedMatrix[r] = new uint[Cols];
 
                 for (int c = 0; c < Cols; c++)
                 {
-                    Matrix[r][c] = Matrix[r][c] ?? intialColor;
-                    convertedMatrix[r][c] = Matrix[r][c].ToBgr();
+                    if (Matrix[r][c] == null)
+                    {
+                        convertedMatrix[r][c] = 0;
+                    }
+                    else
+                    {
+                        var position = Matrix[r][c] ?? intialColor;
+                        convertedMatrix[r][c] = position.ToBgr();
+                        if (this.isKeyGrid)
+                        {
+                            convertedMatrix[r][c] += 0xFF000000;
+                        }
+                    }
                 }
             }
 
@@ -87,23 +101,22 @@ namespace Chroma.NetCore.Api.Chroma
 
         public string ToJson()
         {
-           var json = JsonConvert.SerializeObject(ToMatrix());
+            var json = JsonConvert.SerializeObject(ToMatrix());
             return json;
         }
 
         public Color GetPosition(int row, int col)
         {
-            return !CheckBounds(row, col) ? null : Matrix[row][col];
+            CheckBounds(row, col);
+            return Matrix[row][col];
         }
 
-        private bool CheckBounds(int row, int col)
+        private void CheckBounds(int row, int col)
         {
             if (Rows <= row || row < 0)
                 throw new ChromaNetCoreApiException($"The row index is out of range {row}");
             if (Cols <= col || col < 0)
                 throw new ChromaNetCoreApiException($"The column index is out of range {col}");
-
-            return true;
         }
     }
 }

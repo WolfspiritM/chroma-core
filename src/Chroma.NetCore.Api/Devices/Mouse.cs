@@ -18,14 +18,28 @@ namespace Chroma.NetCore.Api.Devices
             Grid = new Grid(9,7);
         }
         
-        public bool SetPosition(int row, int col, Color color)
+        public IGridDevice SetPosition(int row, int col, Color color)
         {
-            return Grid.SetPosition(row, col, color);
+            Grid.SetPosition(row, col, color);
+            this.SetDevice();
+            return this;
+        }
+
+        public Color GetPosition(int row, int col)
+        {
+            return Grid.GetPosition(row, col) ?? Color.Black;
+        }
+
+        public override void SetAll(Color color)
+        {
+            Grid.Set(color);
+            this.SetDevice();
+            //this.SetStatic(color);
         }
 
         public bool SetDevice()
         {
-            return SetDeviceEffect(Effect.ChromaCustom2, this.Grid.ToMatrix());
+            return SetDeviceEffect(Effect.ChromaCustom2, this.Grid);
         }
     }
 }

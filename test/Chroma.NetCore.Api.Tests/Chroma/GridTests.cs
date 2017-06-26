@@ -6,6 +6,7 @@ using Chroma.NetCore.Api.Exceptions;
 using Chroma.NetCore.Tests.Base;
 using Newtonsoft.Json;
 using Xunit;
+using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Chroma.NetCore.Api.Tests.Chroma
@@ -13,6 +14,12 @@ namespace Chroma.NetCore.Api.Tests.Chroma
 
     public class GridTests
     {
+        private readonly ITestOutputHelper output;
+
+        public GridTests(ITestOutputHelper output)
+        {
+            this.output = output;
+        }
 
         private const int GRID_ROWS = 7, GRID_COLS = 4;
 
@@ -25,13 +32,26 @@ namespace Chroma.NetCore.Api.Tests.Chroma
             Assert.Equal(grid.Cols, grid.Cols);
         }
 
+
+        [Fact]
+        [Trait("Category", TraitCategory.UNIT_TEST)]
+        public void Constructor_ReturnsKeyFlag()
+        {
+            var grid = new Grid(GRID_ROWS, GRID_COLS, true);
+            grid.SetPosition(0, 0, Color.White);
+            var matrix = grid.ToMatrix();
+            var color = matrix[0][0];
+            output.WriteLine(color.ToString());
+            Assert.Equal(color, (uint)0xffffffff);
+            Assert.Equal(grid.Cols, grid.Cols);
+        }
+
         [Fact]
         [Trait("Category", TraitCategory.UNIT_TEST)]
         public void SetPosition_ReturnRightValueRed()
         {
             var grid = new Grid(GRID_ROWS, GRID_COLS);
-            var result = grid.SetPosition(2, 3, Color.Red);
-            Assert.True(result);
+            grid.SetPosition(2, 3, Color.Red);
 
             var resultColor = grid.GetPosition(2, 3);
 
@@ -65,8 +85,7 @@ namespace Chroma.NetCore.Api.Tests.Chroma
         public void SetCol_ReturnRightValueRed()
         {
             var grid = new Grid(GRID_ROWS, GRID_COLS);
-            var result = grid.SetCol(2, Color.Red);
-            Assert.True(result);
+            grid.SetCol(2, Color.Red);
 
             var resultColor = grid.GetPosition(2, 2);
 
@@ -78,8 +97,7 @@ namespace Chroma.NetCore.Api.Tests.Chroma
         public void SetRow_ReturnRightValueRed()
         {
             var grid = new Grid(GRID_ROWS, GRID_COLS);
-            var result = grid.SetCol(1, Color.Red);
-            Assert.True(result);
+            grid.SetCol(1, Color.Red);
 
             var resultColor = grid.GetPosition(1, 2);
 
@@ -91,7 +109,7 @@ namespace Chroma.NetCore.Api.Tests.Chroma
         public void ToJson_ReturnGridAsJsonString()
         {
             var grid = new Grid(GRID_ROWS, GRID_COLS);
-            Assert.True(grid.SetPosition(2, 3, Color.Blue));
+            grid.SetPosition(2, 3, Color.Blue);
 
             var result = grid.ToJson();
             var matrix = JsonConvert.DeserializeObject<int[,]>(result);

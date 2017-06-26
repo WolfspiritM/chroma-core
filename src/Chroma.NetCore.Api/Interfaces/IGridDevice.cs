@@ -10,7 +10,8 @@ namespace Chroma.NetCore.Api.Interfaces
     {
         Grid Grid { get; }
 
-        bool SetPosition(int row, int col, Color color);
+        IGridDevice SetPosition(int row, int col, Color color);
+        Color GetPosition(int row, int col);
 
         bool SetDevice();
         

@@ -28,7 +28,7 @@ namespace Chroma.NetCore.Api.Tests.Chroma
             var color = Color.Orange;
             var result = color.ToBgr();
 
-            Assert.Equal(result, 42495);
+            Assert.Equal(result, (uint)42495);
         }
 
 

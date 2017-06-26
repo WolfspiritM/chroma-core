@@ -87,6 +87,7 @@ namespace Chroma.NetCore.Api
         /// <returns>0|ErrorCode as string</returns>
         public async Task<string> UnRegister()
         {
+            heartbeatTimer?.Dispose();
             var unRegisterMessage = new UnRegisterMessage();
             var response = await Request(unRegisterMessage);
 
@@ -94,8 +95,7 @@ namespace Chroma.NetCore.Api
                 JsonConvert.DeserializeObject<Dictionary<string, string>>(response, new JsonSerializerSettings());
 
             ClientConfiguration.ExposedBaseAddress = null;
-
-            heartbeatTimer?.Dispose();
+            
 
             return result["result"];
         }
@@ -106,7 +106,7 @@ namespace Chroma.NetCore.Api
             //Set Timer
             heartbeatTimer = heartbeatTimer ?? new Timer(async state =>
             {
-                await Heartbeat();
+                    await Heartbeat();
             }, null, 10000, 5000);
 
             var heartbeatMessage = new HeartbeatMessage();

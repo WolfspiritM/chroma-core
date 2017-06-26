@@ -9,7 +9,7 @@ namespace Chroma.NetCore.Api.Chroma
 {
     public class ChromaApp
     {
-        private ChromaInstance instance;
+        private Task<ChromaInstance> instance;
 
         private const string DEFAULT_BASE_ADDRESS = "http://localhost:54235";
 
@@ -49,11 +49,8 @@ namespace Chroma.NetCore.Api.Chroma
             this.jsonAppDefinition = JsonConvert.SerializeObject(appDefinition, Formatting.Indented);
         }
 
-        public async Task<ChromaInstance> Instance(string apiBaseAddress = DEFAULT_BASE_ADDRESS)
+        public async Task<ChromaInstance> CreateInstance(string apiBaseAddress)
         {
-            if (instance != null)
-                return instance;
-
             var clientConfiguration = new ClientConfiguration()
             {
                 BaseAddress = new Uri(apiBaseAddress)
@@ -63,10 +60,25 @@ namespace Chroma.NetCore.Api.Chroma
             client.Init(clientConfiguration);
             await client.Register(jsonAppDefinition);
             await client.Heartbeat();
-            instance = new ChromaInstance(client);
-            instance.DestroyMessage += () => instance = null;
-            
-            return instance;
+            var localInstance = new ChromaInstance(client);
+            localInstance.DestroyMessage += () =>
+            {
+                if (!instance.IsCompleted || instance.Result == localInstance)
+                    instance = null;
+            };
+            return localInstance;
+        }
+
+        public Task<ChromaInstance> Instance(bool createNewInstance = true, string apiBaseAddress = DEFAULT_BASE_ADDRESS)
+        {
+            if (instance != null)
+                return instance;
+
+            if (!createNewInstance)
+                return null;
+
+            this.instance = CreateInstance(apiBaseAddress);
+            return  this.instance;
         }
 
     }

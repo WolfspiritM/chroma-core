@@ -21,35 +21,55 @@ namespace Chroma.NetCore.Api.Devices
         public Keyboard()
         {
             Grid = new Grid(ROWS, COLUMNS);
-            Keys = new Grid(ROWS, COLUMNS);
+            Keys = new Grid(ROWS, COLUMNS, true);
         }
 
-        public bool SetPosition(int row, int col, Color color)
+        public IGridDevice SetPosition(int row, int col, Color color)
         {
-            return Grid.SetPosition(row, col, color);
+            Grid.SetPosition(row, col, color);
+            this.SetDevice();
+            return this;
         }
 
-        public bool SetKey(List<Key> keys, Color color)
+        public override void SetAll(Color color)
         {
-            var result = false;
+            Grid.Set(color);
+            this.SetDevice();
+            //this.SetStatic(color);
+        }
 
+        public IGridDevice SetKey(List<Key> keys, Color color)
+        {
             foreach (var key in keys)
             {
-                result = SetKey(key, color);
-
-                if (!result)
-                    return false;
+                SetKey(key, color);
             }
 
-            return result;
+            this.SetDevice();
+            return this;
         }
 
-        public bool SetKey(Key key, Color color)
+        public Color GetKey(Key key)
         {
             var row = (int)key >> 8;
             var col = (int)key & 0xFF;
 
-            return SetPosition(row, col, color);
+            return Keys.GetPosition(row, col);
+        }
+
+        public Color GetPosition(int row, int col)
+        {
+            return Grid.GetPosition(row, col) ?? Color.Black;
+        }
+
+        public IGridDevice SetKey(Key key, Color color)
+        {
+            var row = (int)key >> 8;
+            var col = (int)key & 0xFF;
+
+            Keys.SetPosition(row, col, color);
+            this.SetDevice();
+            return this;
         }
 
 
@@ -57,8 +77,8 @@ namespace Chroma.NetCore.Api.Devices
         {
             var customKeyEffect = new
             {
-                color = Grid.ToMatrix(),
-                key = Keys.ToMatrix()
+                color = Grid,
+                key = Keys
             };
 
           return SetDeviceEffect(Effect.ChromaCustomKey, customKeyEffect);

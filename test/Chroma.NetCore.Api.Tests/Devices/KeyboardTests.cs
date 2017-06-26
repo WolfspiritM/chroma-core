@@ -42,7 +42,7 @@ namespace Chroma.NetCore.Api.Tests.Devices
                 Key.L,
             };
 
-            Assert.True(keyboard.SetKey(keys, Color.Red));
+            keyboard.SetKey(keys, Color.Red);
 
             var result = keyboard.SetDevice();
 
@@ -57,7 +57,7 @@ namespace Chroma.NetCore.Api.Tests.Devices
             var httpClient = await tests.Register_ReturnRegisteredClient();
             httpClient.ClientMessage += HttpClientOnClientMessage;
             var keyboard = new Keyboard();
-            Assert.True(keyboard.SetKey(Key.Enter, Color.Red));
+            keyboard.SetKey(Key.Enter, Color.Red);
 
             var result = keyboard.SetDevice();
 

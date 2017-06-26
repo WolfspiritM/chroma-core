@@ -24,13 +24,10 @@ namespace Chroma.NetCore.Api.Chroma
 
         public  async Task<bool> Destroy()
         {
+            DestroyMessage();
             var result = await client.UnRegister();
 
             var unregistered = Convert.ToInt32(result) == 0;
-
-            if (unregistered)
-                DestroyMessage();
-
             return unregistered;
         }
 
@@ -38,18 +35,18 @@ namespace Chroma.NetCore.Api.Chroma
         {
             container = deviceContainer ?? this;
             var effectIds = new List<string>();
-            var devices = new List<IDevice>();
+            var devices = new Dictionary<string, IDevice>();
             var responses = new List<RequestResponse>();
 
             foreach (var device in container.Devices)
             {
-                if(device.ActiveEffect == Effect.Undefined)
+                if(device.Value.ActiveEffect == Effect.Undefined)
                     continue;
 
-                if (!string.IsNullOrEmpty(device.EffectId))
-                    effectIds.Add(device.EffectId);
+                if (!string.IsNullOrEmpty(device.Value.EffectId))
+                    effectIds.Add(device.Value.EffectId);
                 else
-                    devices.Add(device);
+                    devices[device.Key] = device.Value;
             }
 
             responses.AddRange(await SetEffect(effectIds));
@@ -58,22 +55,21 @@ namespace Chroma.NetCore.Api.Chroma
             return responses;
         }
 
-        internal async Task<List<RequestResponse>> SendDeviceUpdate(List<IDevice> devices, bool store = false)
+        internal async Task<List<RequestResponse>> SendDeviceUpdate(Dictionary<string, IDevice> devices, bool store = false)
         {
             var responses = new List<RequestResponse>();
 
-            foreach (var device in devices)
+            foreach (var device in devices.Values)
             {
-                //ignore devices with no effects
-                if(device.EffectData == null)
-                    continue;
-
                 IHttpRequestMessage message;
+                var deviceMessage = device.GetDeviceMessage();
+                if (deviceMessage == null) continue;
+
 
                 if(store)
-                    message = new DeviceMessage(device);
+                    message = new DeviceMessage(device, deviceMessage);
                 else
-                    message = new DeviceUpdateMessage(device);
+                    message = new DeviceUpdateMessage(device, deviceMessage);
 
                 responses.Add( new RequestResponse(device,await client.Request(message)));
             }

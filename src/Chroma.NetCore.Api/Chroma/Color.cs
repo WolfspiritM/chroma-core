@@ -9,32 +9,41 @@ namespace Chroma.NetCore.Api.Chroma
 {
     public class Color
     {
-        private int r;
-        private int g;
-        private int b;
+        public byte R { get; set; }
+        public byte G { get; set; }
+        public byte B { get; set; }
 
         private readonly string color;
+
+        public Color()
+        {
+
+        }
 
         public Color(string color)
         {
             this.color = color;
-
             ToRgb();
         }
 
-        public Color(int r, int g, int b)
+        public Color(int r, int g, int b) : this((byte)r, (byte)g, (byte)b)
         {
-            this.r = r;
-            this.g = g;
-            this.b = b;
+
+        }
+
+        public Color(byte r, byte g, byte b)
+        {
+            this.R = r;
+            this.G = g;
+            this.B = b;
 
             //Check borders
-            if (this.r > 255) this.r = 255;
-            if (this.g > 255) this.g = 255;
-            if (this.b > 255) this.b = 255;
-            if (this.r < 0) this.r = 0;
-            if (this.g < 0) this.g = 0;
-            if (this.b < 0) this.b = 0;
+            if (this.R > 255) this.R = 255;
+            if (this.G > 255) this.G = 255;
+            if (this.B > 255) this.B = 255;
+            if (this.R < 0) this.R = 0;
+            if (this.G < 0) this.G = 0;
+            if (this.B < 0) this.B = 0;
         }
 
         public static Color Black = new Color("000000");
@@ -52,36 +61,36 @@ namespace Chroma.NetCore.Api.Chroma
         public string ToRgb()
         {
             if (string.IsNullOrEmpty(color))
-                return $"{r} {g} {b}";
+                return $"{R} {G} {B}";
 
             var colorComponents = Regex.Match(color, "^#?([a-f\\d]{2})([a-f\\d]{2})([a-f\\d]{2})$", RegexOptions.IgnoreCase);
 
             if(colorComponents.Groups.Count != 4)
                 throw new ChromaNetCoreApiException("Invalid color format!");
 
-            r = int.Parse(colorComponents.Groups[1].Value, NumberStyles.HexNumber);
-            g = int.Parse(colorComponents.Groups[2].Value, NumberStyles.HexNumber);
-            b = int.Parse(colorComponents.Groups[3].Value, NumberStyles.HexNumber);
+            R = byte.Parse(colorComponents.Groups[1].Value, NumberStyles.HexNumber);
+            G = byte.Parse(colorComponents.Groups[2].Value, NumberStyles.HexNumber);
+            B = byte.Parse(colorComponents.Groups[3].Value, NumberStyles.HexNumber);
 
-            return $"{r} {g} {b}";
+            return $"{R} {G} {B}";
         }
 
         /// <summary>
         /// Convert color to BGR scheme.
         /// </summary>
         /// <returns>BGR value as int.</returns>
-        public int ToBgr()
+        public uint ToBgr()
         {
-            var rHex = this.r.ToString("X");
+            var rHex = this.R.ToString("X");
             if (rHex.Length < 2) rHex = "0" + rHex;
-            var gHex = this.g.ToString("X");
+            var gHex = this.G.ToString("X");
             if (gHex.Length < 2) gHex = "0" + gHex;
-            var bHex = this.b.ToString("X");
+            var bHex = this.B.ToString("X");
             if (bHex.Length < 2) bHex = "0" + bHex;
 
             var result = bHex + gHex + rHex;
-
-            return int.Parse(result, NumberStyles.HexNumber);
+            
+            return uint.Parse(result, NumberStyles.HexNumber);
         }
 
         public override string ToString()

@@ -15,8 +15,6 @@ namespace Chroma.NetCore.Api.Interfaces
         Effect ActiveEffect { get; }
         string EffectId { get; set; }
 
-        dynamic EffectData { get; set; }
-
 
         #endregion
 
@@ -25,6 +23,7 @@ namespace Chroma.NetCore.Api.Interfaces
         void SetStatic(Color color);
         void SetAll(Color color);
         void SetNone();
+        string GetDeviceMessage();
 
         #endregion
 
